@@ -11,6 +11,7 @@
 #include <list>
 #include <vector>
 #include <memory>
+#include <functional>
 
 namespace EntitasPP
 {
