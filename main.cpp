@@ -273,12 +273,6 @@ public:
     std::vector<Feature> features;
 };
 
-class IWriteFile
-{
-public:
-    void IWrite(){};
-};
-
 int main(const int argc, const char* argv[])
 {
     const auto input = std::make_shared<Pool>();
