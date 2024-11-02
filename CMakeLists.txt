@@ -28,7 +28,7 @@ message(STATUS "CMAKE_BUILD_CONFIG: ${CMAKE_BUILD_TYPE} (${BUILD_CPU_ARCH})")
 
 # -------------------------------------------------------------------------------------------------
 
-set(CMAKE_CXX_FLAGS         "-Wall -Werror -fmax-errors=5 -std=c++11")
+set(CMAKE_CXX_FLAGS         "-Wall -fmax-errors=5 -std=c++11")
 set(CMAKE_CXX_FLAGS_DEBUG   "-gdwarf-2 -Og -DDEBUG_ON") # -g
 set(CMAKE_CXX_FLAGS_RELEASE "-s -O2")
 

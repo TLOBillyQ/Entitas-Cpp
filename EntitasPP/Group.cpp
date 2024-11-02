@@ -60,7 +60,7 @@ auto Group::GetMatcher() const -> Matcher
 
 auto Group::CreateObserver(const GroupEventType eventType) -> std::shared_ptr<GroupObserver>
 {
-	return std::shared_ptr<GroupObserver>(new GroupObserver(mInstance.lock(), eventType));
+	return std::make_shared<GroupObserver>(mInstance.lock(), eventType);
 }
 
 void Group::SetInstance(std::shared_ptr<Group> instance)

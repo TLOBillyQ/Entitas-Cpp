@@ -34,6 +34,6 @@ class SystemContainer : public IInitializeSystem, public IExecuteSystem, public 
 template <typename T>
 auto SystemContainer::Add() -> SystemContainer*
 {
-	return Add(std::shared_ptr<T>(new T()));
+	return Add(std::make_shared<T>());
 }
 }

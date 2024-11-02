@@ -9,7 +9,7 @@
 namespace EntitasPP
 {
 class Matcher;
-class TriggerOnEvent;
+struct TriggerOnEvent;
 typedef std::vector<Matcher> MatcherList;
 
 class Matcher
@@ -17,11 +17,12 @@ class Matcher
 	public:
 		Matcher() = default;
 		static auto AllOf(const ComponentIdList indices) -> const Matcher;
-		static auto AllOf(const MatcherList matchers) -> const Matcher;
 		static auto AnyOf(const ComponentIdList indices) -> const Matcher;
-		static auto AnyOf(const MatcherList matchers) -> const Matcher;
 		static auto NoneOf(const ComponentIdList indices) -> const Matcher;
-		static auto NoneOf(const MatcherList matchers) -> const Matcher;
+
+		auto WithAllOf(ComponentIdList indices) -> Matcher;
+		auto WithAnyOf(ComponentIdList indices) -> Matcher;
+		auto WithNoneOf(ComponentIdList indices) -> Matcher;
 
 		bool IsEmpty() const;
 		bool Matches(const EntityPtr& entity);
@@ -71,17 +72,84 @@ struct hash<EntitasPP::Matcher>
 
 namespace
 {
-#define FUNC_1(MODIFIER, X) MODIFIER(X)
-#define FUNC_2(MODIFIER, X, ...) MODIFIER(X), FUNC_1(MODIFIER, __VA_ARGS__)
-#define FUNC_3(MODIFIER, X, ...) MODIFIER(X), FUNC_2(MODIFIER, __VA_ARGS__)
-#define FUNC_4(MODIFIER, X, ...) MODIFIER(X), FUNC_3(MODIFIER, __VA_ARGS__)
-#define FUNC_5(MODIFIER, X, ...) MODIFIER(X), FUNC_4(MODIFIER, __VA_ARGS__)
-#define FUNC_6(MODIFIER, X, ...) MODIFIER(X), FUNC_5(MODIFIER, __VA_ARGS__)
-#define GET_MACRO(_1, _2, _3, _4, _5, _6, NAME,...) NAME
-#define FOR_EACH(MODIFIER,...) GET_MACRO(__VA_ARGS__, FUNC_6, FUNC_5, FUNC_4, FUNC_3, FUNC_2, FUNC_1)(MODIFIER, __VA_ARGS__)
-
 #define COMPONENT_GET_TYPE_ID(COMPONENT_CLASS) EntitasPP::ComponentTypeId::Get<COMPONENT_CLASS>()
-#define Matcher_AllOf(...) ((EntitasPP::Matcher)EntitasPP::Matcher::AllOf(std::vector<EntitasPP::ComponentId>({ FOR_EACH(COMPONENT_GET_TYPE_ID, __VA_ARGS__) })))
-#define Matcher_AnyOf(...) ((EntitasPP::Matcher)EntitasPP::Matcher::AnyOf(std::vector<EntitasPP::ComponentId>({ FOR_EACH(COMPONENT_GET_TYPE_ID, __VA_ARGS__) })))
-#define Matcher_NoneOf(...) ((EntitasPP::Matcher)EntitasPP::Matcher::NoneOf(std::vector<EntitasPP::ComponentId>({ FOR_EACH(COMPONENT_GET_TYPE_ID, __VA_ARGS__) })))
+
+#define Matcher_AllOf(C1) \
+((EntitasPP::Matcher)EntitasPP::Matcher::AllOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1) })))
+#define Matcher_AllOf2(C1, C2) \
+((EntitasPP::Matcher)EntitasPP::Matcher::AllOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2) })))
+#define Matcher_AllOf3(C1, C2, C3) \
+((EntitasPP::Matcher)EntitasPP::Matcher::AllOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3) })))
+#define Matcher_AllOf4(C1, C2, C3, C4) \
+((EntitasPP::Matcher)EntitasPP::Matcher::AllOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4) })))
+#define Matcher_AllOf5(C1, C2, C3, C4, C5) \
+((EntitasPP::Matcher)EntitasPP::Matcher::AllOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4), COMPONENT_GET_TYPE_ID(C5) })))
+#define Matcher_AllOf6(C1, C2, C3, C4, C5, C6) \
+((EntitasPP::Matcher)EntitasPP::Matcher::AllOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4), COMPONENT_GET_TYPE_ID(C5), COMPONENT_GET_TYPE_ID(C6) })))
+
+#define Matcher_AnyOf(C1) \
+((EntitasPP::Matcher)EntitasPP::Matcher::AnyOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1) })))
+#define Matcher_AnyOf2(C1, C2) \
+((EntitasPP::Matcher)EntitasPP::Matcher::AnyOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2) })))
+#define Matcher_AnyOf3(C1, C2, C3) \
+((EntitasPP::Matcher)EntitasPP::Matcher::AnyOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3) })))
+#define Matcher_AnyOf4(C1, C2, C3, C4) \
+((EntitasPP::Matcher)EntitasPP::Matcher::AnyOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4) })))
+#define Matcher_AnyOf5(C1, C2, C3, C4, C5) \
+((EntitasPP::Matcher)EntitasPP::Matcher::AnyOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4), COMPONENT_GET_TYPE_ID(C5) })))
+#define Matcher_AnyOf6(C1, C2, C3, C4, C5, C6) \
+((EntitasPP::Matcher)EntitasPP::Matcher::AnyOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4), COMPONENT_GET_TYPE_ID(C5), COMPONENT_GET_TYPE_ID(C6) })))
+
+#define Matcher_NoneOf(C1) \
+((EntitasPP::Matcher)EntitasPP::Matcher::NoneOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1) })))
+#define Matcher_NoneOf2(C1, C2) \
+((EntitasPP::Matcher)EntitasPP::Matcher::NoneOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2) })))
+#define Matcher_NoneOf3(C1, C2, C3) \
+((EntitasPP::Matcher)EntitasPP::Matcher::NoneOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3) })))
+#define Matcher_NoneOf4(C1, C2, C3, C4) \
+((EntitasPP::Matcher)EntitasPP::Matcher::NoneOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4) })))
+#define Matcher_NoneOf5(C1, C2, C3, C4, C5) \
+((EntitasPP::Matcher)EntitasPP::Matcher::NoneOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4), COMPONENT_GET_TYPE_ID(C5) })))
+#define Matcher_NoneOf6(C1, C2, C3, C4, C5, C6) \
+((EntitasPP::Matcher)EntitasPP::Matcher::NoneOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4), COMPONENT_GET_TYPE_ID(C5), COMPONENT_GET_TYPE_ID(C6) })))
+
+#define With_AllOf(C1) \
+WithAllOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1) }))
+#define With_AllOf2(C1, C2) \
+WithAllOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2) }))
+#define With_AllOf3(C1, C2, C3) \
+WithAllOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3) }))
+#define With_AllOf4(C1, C2, C3, C4) \
+WithAllOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4) }))
+#define With_AllOf5(C1, C2, C3, C4, C5) \
+WithAllOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4), COMPONENT_GET_TYPE_ID(C5) }))
+#define With_All6(C1, C2, C3, C4, C5, C6) \
+WithAllOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4), COMPONENT_GET_TYPE_ID(C5), COMPONENT_GET_TYPE_ID(C6) }))
+
+#define With_AnyOf(C1) \
+WithAnyOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1) }))
+#define With_AnyOf2(C1, C2) \
+WithAnyOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2) }))
+#define With_AnyOf3(C1, C2, C3) \
+WithAnyOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3) }))
+#define With_AnyOf4(C1, C2, C3, C4) \
+WithAnyOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4) }))
+#define With_AnyOf5(C1, C2, C3, C4, C5) \
+WithAnyOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4), COMPONENT_GET_TYPE_ID(C5) }))
+#define With_AnyOf6(C1, C2, C3, C4, C5, C6) \
+WithAnyOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4), COMPONENT_GET_TYPE_ID(C5), COMPONENT_GET_TYPE_ID(C6) }))
+
+#define With_NoneOf(C1) \
+WithNoneOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1) }))
+#define With_NoneOf2(C1, C2) \
+WithNoneOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2) }))
+#define With_NoneOf3(C1, C2, C3) \
+WithNoneOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3) }))
+#define With_NoneOf4(C1, C2, C3, C4) \
+WithNoneOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4) }))
+#define With_NoneOf5(C1, C2, C3, C4, C5) \
+WithNoneOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4), COMPONENT_GET_TYPE_ID(C5) }))
+#define With_NoneOf6(C1, C2, C3, C4, C5, C6) \
+WithNoneOf(std::vector<EntitasPP::ComponentId>({ COMPONENT_GET_TYPE_ID(C1), COMPONENT_GET_TYPE_ID(C2), COMPONENT_GET_TYPE_ID(C3), COMPONENT_GET_TYPE_ID(C4), COMPONENT_GET_TYPE_ID(C5), COMPONENT_GET_TYPE_ID(C6) }))
+
 }

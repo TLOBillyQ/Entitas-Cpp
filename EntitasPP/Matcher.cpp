@@ -17,11 +17,6 @@ auto Matcher::AllOf(const ComponentIdList indices) -> const Matcher
 	return matcher;
 }
 
-auto Matcher::AllOf(const MatcherList matchers) -> const Matcher
-{
-	return Matcher::AllOf(MergeIndices(matchers));
-}
-
 auto Matcher::AnyOf(const ComponentIdList indices) -> const Matcher
 {
 	auto matcher = Matcher();
@@ -29,11 +24,6 @@ auto Matcher::AnyOf(const ComponentIdList indices) -> const Matcher
 	matcher.CalculateHash();
 
 	return matcher;
-}
-
-auto Matcher::AnyOf(const MatcherList matchers) -> const Matcher
-{
-	return Matcher::AnyOf(MergeIndices(matchers));
 }
 
 auto Matcher::NoneOf(const ComponentIdList indices) -> const Matcher
@@ -45,9 +35,31 @@ auto Matcher::NoneOf(const ComponentIdList indices) -> const Matcher
 	return matcher;
 }
 
-auto Matcher::NoneOf(const MatcherList matchers) -> const Matcher
+auto Matcher::WithAllOf(const ComponentIdList indices) -> Matcher
 {
-	return Matcher::NoneOf(MergeIndices(matchers));
+	mAllOfIndices = DistinctIndices(indices);
+	mIndices.clear();
+	CalculateHash();
+
+	return *this;
+}
+
+auto Matcher::WithAnyOf(const ComponentIdList indices) -> Matcher
+{
+	mAnyOfIndices =  DistinctIndices(indices);
+	mIndices.clear();
+	CalculateHash();
+
+	return *this;
+}
+
+auto Matcher::WithNoneOf(const ComponentIdList indices) -> Matcher
+{
+	mNoneOfIndices =  DistinctIndices(indices);
+	mIndices.clear();
+	CalculateHash();
+
+	return *this;
 }
 
 bool Matcher::IsEmpty() const
@@ -218,22 +230,5 @@ auto Matcher::DistinctIndices(ComponentIdList indices) -> ComponentIdList
 	indices.erase(std::unique(indices.begin(), indices.end()), indices.end());
 
 	return indices;
-
-	// Old Code (delete!)
-	/*auto indicesSet = unordered_set<unsigned int>(indices.begin(), indices.end());
-
-	auto uniqueIndices = ComponentIdList();
-	uniqueIndices.reserve(indicesSet.size());
-
-	for(const auto &id : indicesSet)
-	{
-		uniqueIndices.push_back(id);
-	}
-
-	std::sort(uniqueIndices.begin(), uniqueIndices.end(), [](unsigned int a, unsigned int b) {
-		return b < a;
-	});
-
-	return uniqueIndices;*/
 }
 }

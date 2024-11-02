@@ -74,6 +74,6 @@ class Pool
 template <typename T>
 auto Pool::CreateSystem() -> std::shared_ptr<ISystem>
 {
-	return CreateSystem(std::dynamic_pointer_cast<ISystem>(std::shared_ptr<T>(new T())));
+	return CreateSystem(std::dynamic_pointer_cast<ISystem>(std::make_shared<T>()));
 }
 }

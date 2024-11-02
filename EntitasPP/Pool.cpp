@@ -252,17 +252,17 @@ auto Pool::CreateSystem(std::shared_ptr<ISystem> system) -> std::shared_ptr<ISys
 {
 	if(std::dynamic_pointer_cast<ISetPoolSystem>(system) != nullptr)
 	{
-		(std::dynamic_pointer_cast<ISetPoolSystem>(system)->SetPool(this));
+		std::dynamic_pointer_cast<ISetPoolSystem>(system)->SetPool(this);
 	}
 
 	if(std::dynamic_pointer_cast<IReactiveSystem>(system) != nullptr)
 	{
-		return std::shared_ptr<ReactiveSystem>(new ReactiveSystem(this, std::dynamic_pointer_cast<IReactiveSystem>(system)));
+		return std::make_shared<ReactiveSystem>(this, std::dynamic_pointer_cast<IReactiveSystem>(system));
 	}
 
 	if(std::dynamic_pointer_cast<IMultiReactiveSystem>(system) != nullptr)
 	{
-		return std::shared_ptr<ReactiveSystem>(new ReactiveSystem(this, std::dynamic_pointer_cast<IMultiReactiveSystem>(system)));
+		return std::make_shared<ReactiveSystem>(this, std::dynamic_pointer_cast<IMultiReactiveSystem>(system));
 	}
 
 	return system;
@@ -277,7 +277,7 @@ void Pool::UpdateGroupsComponentAddedOrRemoved(EntityPtr entity, ComponentId ind
 
 	auto groups = mGroupsForIndex[index];
 
-	if (groups.size() > 0)
+	if (!groups.empty())
 	{
 		auto events = std::vector<std::pair<std::weak_ptr<Group>, Group::GroupChanged*>>();
 
