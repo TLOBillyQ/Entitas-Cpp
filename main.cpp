@@ -75,13 +75,13 @@ private:
 class TestReactiveSys
     : public IReactiveSystem
       , public ISetPoolSystem
-    // , public IClearReactiveSystem
+      , public IClearReactiveSystem
     // , public IEnsureComponents
 {
 public:
     TestReactiveSys()
     {
-        trigger = Matcher_AllOf(Test1).OnEntityRemoved();
+        trigger = Matcher_AllOf(Test1).OnEntityAdded();
         // ensureComponents = Matcher_AllOf(Test1);
     }
 
@@ -94,9 +94,9 @@ public:
     {
         for (auto entity : entities)
         {
-            mPool->CreateEntity()->Add<Test1>();
-            mPool->CreateEntity()->Add<Test1>();
-            mPool->CreateEntity()->Add<Test1>();
+            mPool->CreateEntity()->Replace<Test1>();
+            mPool->CreateEntity()->Replace<Test1>();
+            mPool->CreateEntity()->Replace<Test1>();
 
             std::cout << "Reactive Loop" << std::endl;
         }
@@ -136,7 +136,7 @@ private:
     Pool* mPool;
 };
 
-class RemoveTest1Sys
+class ReplaceTest1Sys
     : public IInitializeSystem
       , public ISetPoolSystem
       , public IExecuteSystem
@@ -145,7 +145,7 @@ public:
     void Initialize() override
     {
         auto entities = pool->GetGroup(Matcher_AllOf(Test1))->GetEntities();
-        entities.front()->Remove<Test1>();
+        entities.front()->Replace<Test1>();
 
         std::cout << "RemoveTest1Sys" << std::endl;
     }
@@ -233,7 +233,7 @@ private:
     Pool* mPool;
 };
 
-class Feature: public IInitializeSystem, public IExecuteSystem
+class Feature : public IInitializeSystem, public IExecuteSystem
 {
 public:
     void Initialize() override
@@ -243,6 +243,7 @@ public:
             c->Initialize();
         }
     }
+
     void Execute() override
     {
         for (auto& c : containers)
@@ -250,6 +251,7 @@ public:
             c->Execute();
         }
     }
+
     std::vector<std::shared_ptr<SystemContainer>> containers;
 };
 
@@ -263,6 +265,7 @@ public:
             f.Initialize();
         }
     }
+
     void Execute() override
     {
         for (auto& f : features)
@@ -270,6 +273,7 @@ public:
             f.Execute();
         }
     }
+
     std::vector<Feature> features;
 };
 
@@ -287,7 +291,7 @@ int main(const int argc, const char* argv[])
 
     const auto container2 = std::make_shared<SystemContainer>();
     container2->Add(logic->CreateSystem<CreateEntitySys>());
-    container2->Add(logic->CreateSystem<RemoveTest1Sys>());
+    container2->Add(logic->CreateSystem<ReplaceTest1Sys>());
     container2->Add(logic->CreateSystem<TestReactiveSys>());
     container2->Add(logic->CreateSystem<CountAllTest1Sys>());
     auto logic_f = Feature();
@@ -295,9 +299,9 @@ int main(const int argc, const char* argv[])
     Feature view_f;
 
     auto gameController = GameController();
-    gameController.features.emplace_back(input_f);
+    // gameController.features.emplace_back(input_f);
     gameController.features.emplace_back(logic_f);
-    gameController.features.emplace_back(view_f);
+    // gameController.features.emplace_back(view_f);
 
     gameController.Initialize();
     for (unsigned int i = 0; i < 3; ++i)
@@ -307,6 +311,15 @@ int main(const int argc, const char* argv[])
 
         gameController.Execute();
     }
+
+
+    // input
+
+    // logic
+
+    // destruct
+
+    // cleanup
 
     return 0;
 }
